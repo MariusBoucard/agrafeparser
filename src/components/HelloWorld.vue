@@ -1,39 +1,73 @@
 <template>
-  <div class="hello">
-    <h1>{{ msg }}</h1>
-    <p>
-      For a guide and recipes on how to configure / customize this project,<br>
-      check out the
-      <a href="https://cli.vuejs.org" target="_blank" rel="noopener">vue-cli documentation</a>.
-    </p>
-    <h3>Installed CLI Plugins</h3>
-    <ul>
-    </ul>
-    <h3>Essential Links</h3>
-    <ul>
-      <li><a href="https://vuejs.org" target="_blank" rel="noopener">Core Docs</a></li>
-      <li><a href="https://forum.vuejs.org" target="_blank" rel="noopener">Forum</a></li>
-      <li><a href="https://chat.vuejs.org" target="_blank" rel="noopener">Community Chat</a></li>
-      <li><a href="https://twitter.com/vuejs" target="_blank" rel="noopener">Twitter</a></li>
-      <li><a href="https://news.vuejs.org" target="_blank" rel="noopener">News</a></li>
-    </ul>
-    <h3>Ecosystem</h3>
-    <ul>
-      <li><a href="https://router.vuejs.org" target="_blank" rel="noopener">vue-router</a></li>
-      <li><a href="https://vuex.vuejs.org" target="_blank" rel="noopener">vuex</a></li>
-      <li><a href="https://github.com/vuejs/vue-devtools#vue-devtools" target="_blank" rel="noopener">vue-devtools</a></li>
-      <li><a href="https://vue-loader.vuejs.org" target="_blank" rel="noopener">vue-loader</a></li>
-      <li><a href="https://github.com/vuejs/awesome-vue" target="_blank" rel="noopener">awesome-vue</a></li>
-    </ul>
+  <div >
+ 
+   <div v-html=" this.htmlinside ">
+
+   </div>
+
   </div>
 </template>
 
 <script>
 export default {
+  props : {
+    html : { required : true , type : String}
+  },
+  watch : {
+    html : {
+      handler(newValue){
+// Parse the HTML string and create a DOM document
+const parser = new DOMParser();
+const htmlDoc = parser.parseFromString(newValue, 'text/html');
+
+// Find all table elements
+const tables = htmlDoc.getElementsByTagName('table');
+
+// Iterate over the tables and remove the one with "designedwithbee" text
+for (let i = 0; i < tables.length; i++) {
+  const table = tables[i];
+  console.log(table.textContent)
+  if (table.textContent.includes('Designed with BEE')) {
+    const nestedTables = table.getElementsByTagName('table');
+    if (nestedTables.length === 0) {
+      table.parentNode.removeChild(table);
+      break; // Remove the first matching table and exit the loop
+    }}
+}
+
+// Get the modified HTML string
+const modifiedHtmlString = htmlDoc.documentElement.innerHTML;
+  this.htmlinside = modifiedHtmlString
+
+      }
+    }
+  },
   name: 'HelloWorld',
-  props: {
-    msg: String
+  data(){
+    return {
+      htmlinside : this.html
+    }
+  },
+  methods : {
+   removeNestedTables(element) {
+  const nestedTables = element.getElementsByTagName('table');
+
+  for (let i = nestedTables.length - 1; i >= 0; i--) {
+    const nestedTable = nestedTables[i];
+    this.removeNestedTables(nestedTable); // Recursively remove nested tables
+
+    // Check if the nested table's content matches the regex pattern
+    const content = nestedTable.innerHTML;
+    const regex = /designedwithbee/; // Replace with your desired regex pattern
+    if (regex.test(content)) {
+      nestedTable.parentNode.removeChild(nestedTable); // Remove the nested table
+    }
   }
+}
+
+
+  }
+
 }
 </script>
 
@@ -52,5 +86,8 @@ li {
 }
 a {
   color: #42b983;
+}
+table {
+  border : none
 }
 </style>
