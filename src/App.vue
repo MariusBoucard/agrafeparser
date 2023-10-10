@@ -34,6 +34,9 @@ export default {
 </script>
 
 <style>
+body{
+  background-color: #ccc;
+}
 .text-area {
   margin: 20px;
 }
